@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"bitbucket.org/statia/server/internal/domain/entity"
+	"github.com/myestatia/myestatia-go/internal/domain/entity"
 	"gorm.io/gorm"
 )
 

@@ -6,8 +6,8 @@ import (
 
 	"github.com/google/uuid"
 
-	entity "bitbucket.org/statia/server/internal/domain/entity"
-	repository "bitbucket.org/statia/server/internal/infrastructure/repository"
+	entity "github.com/myestatia/myestatia-go/internal/domain/entity"
+	repository "github.com/myestatia/myestatia-go/internal/infrastructure/repository"
 )
 
 type PropertyService struct {

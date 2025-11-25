@@ -4,12 +4,12 @@ import (
 	"log"
 	"net/http"
 
-	router "bitbucket.org/statia/server/internal/adapters/input"
-	handlers "bitbucket.org/statia/server/internal/adapters/input/handler"
-	"bitbucket.org/statia/server/internal/application/service"
-	entity "bitbucket.org/statia/server/internal/domain/entity"
-	database "bitbucket.org/statia/server/internal/infrastructure/database"
-	repository "bitbucket.org/statia/server/internal/infrastructure/repository"
+	router "github.com/myestatia/myestatia-go/internal/adapters/input"
+	handlers "github.com/myestatia/myestatia-go/internal/adapters/input/handler"
+	"github.com/myestatia/myestatia-go/internal/application/service"
+	entity "github.com/myestatia/myestatia-go/internal/domain/entity"
+	database "github.com/myestatia/myestatia-go/internal/infrastructure/database"
+	repository "github.com/myestatia/myestatia-go/internal/infrastructure/repository"
 )
 
 func main() {

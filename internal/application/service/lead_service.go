@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"bitbucket.org/statia/server/internal/domain/entity"
-	"bitbucket.org/statia/server/internal/infrastructure/repository"
+	"github.com/myestatia/myestatia-go/internal/domain/entity"
+	"github.com/myestatia/myestatia-go/internal/infrastructure/repository"
 	"github.com/google/uuid"
 )
 

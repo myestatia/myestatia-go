@@ -1,4 +1,4 @@
-module bitbucket.org/statia/server
+module github.com/myestatia/myestatia-go
 
 go 1.24.4
 

@@ -3,7 +3,7 @@ package router
 import (
 	"net/http"
 
-	"bitbucket.org/statia/server/internal/adapters/input/handler"
+	"github.com/myestatia/myestatia-go/internal/adapters/input/handler"
 )
 
 func NewRouter(leadHandler *handler.LeadHandler, propertyHandler *handler.PropertyHandler, companyHandler *handler.CompanyHandler, agentHandler *handler.AgentHandler) http.Handler {

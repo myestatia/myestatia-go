@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 
-	"bitbucket.org/statia/server/internal/application/service"
-	"bitbucket.org/statia/server/internal/domain/entity"
+	"github.com/myestatia/myestatia-go/internal/application/service"
+	"github.com/myestatia/myestatia-go/internal/domain/entity"
 )
 
 type PropertyHandler struct {
