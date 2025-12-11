@@ -6,7 +6,7 @@ import (
 	"github.com/myestatia/myestatia-go/internal/adapters/input/handler"
 )
 
-func NewRouter(leadHandler *handler.LeadHandler, propertyHandler *handler.PropertyHandler, companyHandler *handler.CompanyHandler, agentHandler *handler.AgentHandler) http.Handler {
+func NewRouter(leadHandler *handler.LeadHandler, propertyHandler *handler.PropertyHandler, companyHandler *handler.CompanyHandler, agentHandler *handler.AgentHandler, messageHandler *handler.MessageHandler) http.Handler {
 	mux := http.NewServeMux()
 
 	// CRUD Leads
@@ -43,6 +43,10 @@ func NewRouter(leadHandler *handler.LeadHandler, propertyHandler *handler.Proper
 	mux.HandleFunc("GET /api/v1/agents/{id}", agentHandler.GetAgentByID)
 	mux.HandleFunc("PUT /api/v1/agents/{id}", agentHandler.UpdateAgent)
 	mux.HandleFunc("DELETE /api/v1/agents/{id}", agentHandler.DeleteAgent)
+
+	// Conversations
+	mux.HandleFunc("GET /api/v1/lead/{id}/conversations", messageHandler.GetConversations)
+	mux.HandleFunc("POST /api/v1/conversations/{leadId}/messages", messageHandler.SendMessage)
 
 	return mux
 }
