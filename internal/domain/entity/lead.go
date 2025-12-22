@@ -21,7 +21,7 @@ type Lead struct {
 	Email           string     `gorm:"uniqueIndex;not null" json:"email"`
 	Phone           string     `gorm:"not null" json:"phone"`
 	Status          LeadStatus `gorm:"type:varchar(20);default:'new'" json:"status"`
-	PropertyID      string     `gorm:"not null;type:uuid;index" json:"propertyId"`
+	PropertyID      *string    `gorm:"type:uuid;index" json:"propertyId"`
 	Property        *Property  `gorm:"foreignKey:PropertyID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT" json:"property,omitempty"`
 	CompanyID       string     `gorm:"not null;type:uuid;index" json:"companyId"`
 	Company         *Company   `gorm:"foreignKey:CompanyID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT" json:"company,omitempty"`

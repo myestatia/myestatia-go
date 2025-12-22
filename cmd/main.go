@@ -38,6 +38,7 @@ func main() {
 		&entity.Property{},
 		&entity.SystemConfig{},
 		&entity.Agent{},
+		&entity.Company{},
 	)
 	if err != nil {
 		log.Fatalf("Error migrating database: %v", err)
@@ -65,7 +66,9 @@ func main() {
 	messageService := service.NewMessageService(messageRepo)
 	messageHandler := handlers.NewMessageHandler(messageService)
 
-	mux := router.NewRouter(leadHandler, propertyHandler, companyHandler, agentHandler, messageHandler)
+	authHandler := handlers.NewAuthHandler(agentService, companyService)
+
+	mux := router.NewRouter(leadHandler, propertyHandler, companyHandler, agentHandler, messageHandler, authHandler)
 
 	// Wrap the router with CORS middleware
 	handler := middleware.CorsMiddleware(mux)
