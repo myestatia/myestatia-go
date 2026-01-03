@@ -45,6 +45,7 @@ func NewRouter(
 	mux.Handle("PUT /api/v1/properties/{id}", protected(propertyHandler.UpdateProperty))
 	mux.Handle("DELETE /api/v1/properties/{id}", protected(propertyHandler.DeleteProperty))
 	mux.Handle("GET /api/v1/properties/company/{company_id}", protected(propertyHandler.GetPropertiesByCompany))
+	mux.Handle("GET /api/v1/property-subtypes", protected(propertyHandler.ListSubtypes))
 
 	//CRUD Company
 	mux.Handle("POST /api/v1/companies", protected(companyHandler.CreateCompany))

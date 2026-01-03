@@ -36,6 +36,7 @@ type Lead struct {
 	PropertyType             string  `json:"propertyType"`
 	Channel                  string  `json:"channel"`
 	SuggestedPropertiesCount int     `json:"suggestedPropertiesCount"`
+	Notes                    string  `json:"notes"`
 
 	Messages  []Message `gorm:"foreignKey:LeadID" json:"messages,omitempty"`
 	Summaries []Summary `gorm:"foreignKey:LeadID" json:"summaries,omitempty"`

@@ -17,6 +17,7 @@ type PropertyRepository interface {
 	FindByReference(ctx context.Context, ref string) (*entity.Property, error)
 	FindAllByCompanyID(ctx context.Context, companyID string) ([]entity.Property, error)
 	Search(ctx context.Context, filter entity.PropertyFilter) ([]entity.Property, error)
+	FindSubtypes(ctx context.Context, propertyType string) ([]entity.PropertySubtype, error)
 }
 
 type propertyRepository struct {
@@ -140,4 +141,18 @@ func (r *propertyRepository) Search(ctx context.Context, filter entity.PropertyF
 	}
 
 	return properties, nil
+}
+
+func (r *propertyRepository) FindSubtypes(ctx context.Context, propertyType string) ([]entity.PropertySubtype, error) {
+	var subtypes []entity.PropertySubtype
+	query := r.db.WithContext(ctx).Where("active = ?", true)
+
+	if propertyType != "" {
+		query = query.Where("type = ?", propertyType)
+	}
+
+	if err := query.Find(&subtypes).Error; err != nil {
+		return nil, err
+	}
+	return subtypes, nil
 }

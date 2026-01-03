@@ -11,6 +11,7 @@ import (
 	entity "github.com/myestatia/myestatia-go/internal/domain/entity"
 	database "github.com/myestatia/myestatia-go/internal/infrastructure/database"
 	repository "github.com/myestatia/myestatia-go/internal/infrastructure/repository"
+	"github.com/myestatia/myestatia-go/internal/infrastructure/seed"
 )
 
 func main() {
@@ -45,6 +46,10 @@ func main() {
 	}
 
 	log.Println("Database migrated successfully")
+
+	if err := seed.SeedPropertySubtypes(db); err != nil {
+		log.Printf("Error seeding subtypes: %v", err)
+	}
 
 	leadRepo := repository.NewLeadRepository(db)
 	leadSvc := service.NewLeadService(leadRepo)

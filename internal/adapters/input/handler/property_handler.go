@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/myestatia/myestatia-go/internal/adapters/input/middleware"
 	"github.com/myestatia/myestatia-go/internal/application/service"
 	"github.com/myestatia/myestatia-go/internal/domain/entity"
 )
@@ -96,8 +97,14 @@ func (h *PropertyHandler) CreateProperty(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	companyID, ok := r.Context().Value(middleware.CompanyIDKey).(string)
+	if !ok || companyID == "" {
+		http.Error(w, "Unauthorized: invalid company context", http.StatusUnauthorized)
+		return
+	}
+	req.CompanyID = companyID
+
 	// Inject default values for now
-	req.CompanyID = "ecf4ed64-06b5-4129-af4e-72718751e087" // Demo Tenant ID
 	if req.Reference == "" {
 		// Simple random reference generation
 		req.Reference = "REF-" + strings.ToUpper(strings.Split(req.ID, "-")[0])
@@ -228,4 +235,23 @@ func (h *PropertyHandler) SearchProperties(w http.ResponseWriter, r *http.Reques
 
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(properties)
+}
+
+// GET /api/v1/property-subtypes
+func (h *PropertyHandler) ListSubtypes(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	propertyType := r.URL.Query().Get("type")
+
+	subtypes, err := h.Service.ListSubtypes(r.Context(), propertyType)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(subtypes)
 }

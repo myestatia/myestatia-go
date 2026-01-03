@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/myestatia/myestatia-go/internal/adapters/input/middleware"
 	"github.com/myestatia/myestatia-go/internal/application/service"
 	"github.com/myestatia/myestatia-go/internal/domain/entity"
 )
@@ -32,6 +33,7 @@ func (h *LeadHandler) CreateLead(w http.ResponseWriter, r *http.Request) {
 		Language   string `json:"language"`
 		Source     string `json:"source"`
 		PropertyID string `json:"propertyId"`
+		CompanyID  string `json:"companyId"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -44,6 +46,12 @@ func (h *LeadHandler) CreateLead(w http.ResponseWriter, r *http.Request) {
 		propertyID = &req.PropertyID
 	}
 
+	companyID, ok := r.Context().Value(middleware.CompanyIDKey).(string)
+	if !ok || companyID == "" {
+		http.Error(w, "Unauthorized: invalid company context", http.StatusUnauthorized)
+		return
+	}
+
 	lead := &entity.Lead{
 		Name:       req.Name,
 		Email:      req.Email,
@@ -51,7 +59,7 @@ func (h *LeadHandler) CreateLead(w http.ResponseWriter, r *http.Request) {
 		Language:   req.Language,
 		Source:     req.Source,
 		PropertyID: propertyID,
-		CompanyID:  "ecf4ed64-06b5-4129-af4e-72718751e087", // Demo Tenant ID
+		CompanyID:  companyID,
 	}
 
 	createdLead, created, err := h.Service.Create(context.Background(), lead)

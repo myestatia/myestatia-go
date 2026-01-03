@@ -64,6 +64,10 @@ type Property struct {
 	Currency         string         `json:"currency"`
 	Floor            *int           `json:"floor"`
 
+	// New fields
+	EnergyCertificate string `json:"energyCertificate"`
+	YearBuilt         int    `json:"yearBuilt"`
+
 	// Frontend Integration Fields
 	Image                string `json:"image"`
 	Zone                 string `json:"zone"`
