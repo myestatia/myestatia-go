@@ -27,13 +27,16 @@ func (h *LeadHandler) CreateLead(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req struct {
-		Name       string `json:"name"`
-		Email      string `json:"email"`
-		Phone      string `json:"phone"`
-		Language   string `json:"language"`
-		Source     string `json:"source"`
-		PropertyID string `json:"propertyId"`
-		CompanyID  string `json:"companyId"`
+		Name         string  `json:"name"`
+		Email        string  `json:"email"`
+		Phone        string  `json:"phone"`
+		Language     string  `json:"language"`
+		Source       string  `json:"source"`
+		Budget       float64 `json:"budget"`
+		Zone         string  `json:"zone"`
+		PropertyType string  `json:"propertyType"`
+		PropertyID   string  `json:"propertyId"`
+		CompanyID    string  `json:"companyId"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -53,13 +56,16 @@ func (h *LeadHandler) CreateLead(w http.ResponseWriter, r *http.Request) {
 	}
 
 	lead := &entity.Lead{
-		Name:       req.Name,
-		Email:      req.Email,
-		Phone:      req.Phone,
-		Language:   req.Language,
-		Source:     req.Source,
-		PropertyID: propertyID,
-		CompanyID:  companyID,
+		Name:         req.Name,
+		Email:        req.Email,
+		Phone:        req.Phone,
+		Language:     req.Language,
+		Source:       req.Source,
+		Budget:       req.Budget,
+		Zone:         req.Zone,
+		PropertyType: req.PropertyType,
+		PropertyID:   propertyID,
+		CompanyID:    companyID,
 	}
 
 	createdLead, created, err := h.Service.Create(context.Background(), lead)
