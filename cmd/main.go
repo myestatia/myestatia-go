@@ -59,10 +59,6 @@ func main() {
 	propertyRepo := repository.NewPropertyRepository(db)
 	propertyService := service.NewPropertyService(propertyRepo)
 
-	// Storage
-	storageService := storage.NewLocalStorageService("uploads", "http://localhost:8080/uploads")
-	propertyHandler := handlers.NewPropertyHandler(propertyService, storageService)
-
 	companyRepo := repository.NewCompanyRepository(db)
 	companyService := service.NewCompanyService(companyRepo)
 	companyHandler := handlers.NewCompanyHandler(companyService)
@@ -70,6 +66,10 @@ func main() {
 	agentRepo := repository.NewAgentRepository(db)
 	agentService := service.NewAgentService(agentRepo, propertyRepo)
 	agentHandler := handlers.NewAgentHandler(agentService)
+
+	// Storage
+	storageService := storage.NewLocalStorageService("uploads", "http://localhost:8080/uploads")
+	propertyHandler := handlers.NewPropertyHandler(propertyService, agentService, companyService, storageService)
 
 	messageRepo := repository.NewMessageRepository(db)
 	messageService := service.NewMessageService(messageRepo)

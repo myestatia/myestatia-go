@@ -16,14 +16,18 @@ import (
 )
 
 type PropertyHandler struct {
-	Service *service.PropertyService
-	Storage service.StorageService
+	Service        *service.PropertyService
+	AgentService   *service.AgentService
+	CompanyService *service.CompanyService
+	Storage        service.StorageService
 }
 
-func NewPropertyHandler(s *service.PropertyService, storage service.StorageService) *PropertyHandler {
+func NewPropertyHandler(s *service.PropertyService, as *service.AgentService, cs *service.CompanyService, storage service.StorageService) *PropertyHandler {
 	return &PropertyHandler{
-		Service: s,
-		Storage: storage,
+		Service:        s,
+		AgentService:   as,
+		CompanyService: cs,
+		Storage:        storage,
 	}
 }
 
@@ -69,6 +73,54 @@ func (h *PropertyHandler) GetPropertyByID(w http.ResponseWriter, r *http.Request
 
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(property)
+}
+
+// GET /api/v1/public/properties/{id}
+func (h *PropertyHandler) GetPublicPropertyByID(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	id := strings.TrimPrefix(r.URL.Path, "/api/v1/public/properties/")
+	if id == "" {
+		http.Error(w, "missing id", http.StatusBadRequest)
+		return
+	}
+
+	property, err := h.Service.GetPropertyByID(r.Context(), id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	if property == nil {
+		http.Error(w, "Property not found", http.StatusNotFound)
+		return
+	}
+
+	contactPhone := ""
+	// Try agent phone
+	if property.CreatedByAgentID != nil && *property.CreatedByAgentID != "" {
+		agent, err := h.AgentService.FindByID(r.Context(), *property.CreatedByAgentID)
+		if err == nil && agent != nil && agent.Phone != "" {
+			contactPhone = agent.Phone
+		}
+	}
+
+	// Fallback to company phone
+	if contactPhone == "" && property.CompanyID != "" {
+		company, err := h.CompanyService.FindByID(r.Context(), property.CompanyID)
+		if err == nil && company != nil {
+			contactPhone = company.Phone1
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	resp := map[string]any{
+		"property":     property,
+		"contactPhone": contactPhone,
+	}
+	_ = json.NewEncoder(w).Encode(resp)
 }
 
 // DELETE /api/v1/properties/{id}
@@ -152,6 +204,11 @@ func (h *PropertyHandler) processCreateProperty(w http.ResponseWriter, r *http.R
 		return
 	}
 	req.CompanyID = companyID
+
+	agentID, ok := r.Context().Value(middleware.AgentIDKey).(string)
+	if ok && agentID != "" {
+		req.CreatedByAgentID = &agentID
+	}
 
 	// Inject default values for now
 	if req.Reference == "" {

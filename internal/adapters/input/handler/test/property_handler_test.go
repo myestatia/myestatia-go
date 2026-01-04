@@ -23,7 +23,7 @@ func TestCreateProperty_Handler(t *testing.T) {
 	mockRepo := new(mocks.PropertyRepositoryMock)
 	mockStorage := new(mocks.StorageServiceMock)
 	svc := service.NewPropertyService(mockRepo)
-	h := handler.NewPropertyHandler(svc, mockStorage)
+	h := handler.NewPropertyHandler(svc, nil, nil, mockStorage)
 
 	propReq := entity.Property{
 		Reference: "REF-HTTP",
@@ -73,7 +73,7 @@ func TestGetPropertyByID_Handler_Success(t *testing.T) {
 	mockRepo := new(mocks.PropertyRepositoryMock)
 	mockStorage := new(mocks.StorageServiceMock)
 	svc := service.NewPropertyService(mockRepo)
-	h := handler.NewPropertyHandler(svc, mockStorage)
+	h := handler.NewPropertyHandler(svc, nil, nil, mockStorage)
 
 	propID := "P1"
 	prop := &entity.Property{ID: propID, Reference: "REF1"}
