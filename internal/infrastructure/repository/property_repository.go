@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"errors"
+	"strings"
 
 	"github.com/myestatia/myestatia-go/internal/domain/entity"
 	"gorm.io/gorm"
@@ -90,23 +91,48 @@ func (r *propertyRepository) Search(ctx context.Context, filter entity.PropertyF
 
 	query := r.db.WithContext(ctx)
 
-	// Habitaciones
+	// Explicit Filters
+	if filter.Status != nil && *filter.Status != "" && *filter.Status != "all" && *filter.Status != "todos" {
+		query = query.Where("status = ?", *filter.Status)
+	}
+
+	if filter.Origin != nil && *filter.Origin != "" && *filter.Origin != "all" && *filter.Origin != "todos" {
+		origin := *filter.Origin
+		// Simple mapping if needed, e.g., "owned" -> "MANUAL"
+		if strings.ToUpper(origin) == "OWNED" {
+			origin = string(entity.OriginManual)
+		} else if strings.ToUpper(origin) == "RESALES" {
+			origin = "RESALES" // Or whatever constant is used for imports
+		}
+		query = query.Where("origin = ?", origin)
+	}
+
+	// Global Search Term
+	if filter.SearchTerm != nil && *filter.SearchTerm != "" {
+		pattern := "%" + *filter.SearchTerm + "%"
+		query = query.Where(
+			r.db.Where("title ILIKE ?", pattern).
+				Or("reference ILIKE ?", pattern).
+				Or("address ILIKE ?", pattern).
+				Or("city ILIKE ?", pattern).
+				Or("province ILIKE ?", pattern).
+				Or("zone ILIKE ?", pattern),
+		)
+	}
+
+	// Range Filters
 	if filter.MinRooms != nil {
 		query = query.Where("rooms >= ?", *filter.MinRooms)
 	}
 	if filter.MaxRooms != nil {
 		query = query.Where("rooms <= ?", *filter.MaxRooms)
 	}
-
-	// Precio
 	if filter.MinPrice != nil {
 		query = query.Where("price >= ?", *filter.MinPrice)
 	}
 	if filter.MaxPrice != nil {
 		query = query.Where("price <= ?", *filter.MaxPrice)
 	}
-
-	// Área (m2)
 	if filter.MinAreaM2 != nil {
 		query = query.Where("area_m2 >= ?", *filter.MinAreaM2)
 	}
@@ -114,24 +140,20 @@ func (r *propertyRepository) Search(ctx context.Context, filter entity.PropertyF
 		query = query.Where("area_m2 <= ?", *filter.MaxAreaM2)
 	}
 
+	// Legacy filters (keep for compatibility if needed, though global search overrides if both present)
 	if filter.Province != nil && *filter.Province != "" {
-		// Partial Search: "Barc" will find "Barcelona"
 		pattern := "%" + *filter.Province + "%"
 		query = query.Where("province ILIKE ?", pattern)
 	}
-
 	if filter.Address != nil && *filter.Address != "" {
 		pattern := "%" + *filter.Address + "%"
 		query = query.Where("address ILIKE ?", pattern)
 	}
 
 	// Pagination
-
 	if filter.Limit > 0 {
 		query = query.Limit(filter.Limit)
 	}
-
-	// offset
 	if filter.Offset > 0 {
 		query = query.Offset(filter.Offset)
 	}

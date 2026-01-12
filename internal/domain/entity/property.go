@@ -25,6 +25,9 @@ const (
 )
 
 type PropertyFilter struct {
+	SearchTerm *string
+	Status     *string
+	Origin     *string
 	MinRooms   *int
 	MaxRooms   *int
 	MinPrice   *float64
