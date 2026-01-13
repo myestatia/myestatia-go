@@ -40,7 +40,7 @@ func (r *leadRepository) FindByID(id string) (*entity.Lead, error) {
 
 func (r *leadRepository) FindAll() ([]entity.Lead, error) {
 	var leads []entity.Lead
-	if err := r.db.Find(&leads).Error; err != nil {
+	if err := r.db.Order("created_at DESC").Find(&leads).Error; err != nil {
 		return nil, err
 	}
 	return leads, nil
@@ -74,7 +74,8 @@ func (r *leadRepository) FindByCompanyId(ctx context.Context, companyID string) 
 	var leads []entity.Lead
 	if err := r.db.WithContext(ctx).
 		Where("company_id = ?", companyID).
-		Preload("Company"). //Carga company por detrás
+		Preload("Company").       //Carga company por detrás
+		Order("created_at DESC"). // Newest first
 		Find(&leads).Error; err != nil {
 		return nil, err
 	}
